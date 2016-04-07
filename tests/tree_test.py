@@ -1,4 +1,4 @@
-from hypothesis import given, strategies as st
+from hypothesis import find, given, strategies as st
 from pymcts.tree import Node, Tree
 
 tree_value_strategy = st.floats() | st.booleans() | st.text()
@@ -26,3 +26,11 @@ def test_parent(tree: Tree):
     for node in tree_dfs_postorder(tree):
         for child in node.children:
             assert child.parent is node
+
+
+def apply_tree_strategy():
+    return find(tree_strategy, lambda x: True)
+
+
+def test_tree_creation(benchmark):
+    benchmark(apply_tree_strategy)

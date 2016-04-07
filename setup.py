@@ -12,7 +12,7 @@ CLASSIFIERS = [
     "Topic :: Games/Entertainment :: Turn Based Strategy",
 ]
 
-_tests_require = ["pytest", "hypothesis"]
+_tests_require = ["pytest", "hypothesis", "pytest-benchmark"]
 
 setup(
     name="pymcts",
