@@ -1,0 +1,15 @@
+# https://travis-ci.org/#!/smallnamespace/pymcts
+sudo: false
+language: python
+python:
+  - 3.5
+cache:
+  directories:
+    - $HOME/.pip-cache/
+    - $HOME/virtualenv/python3.5
+install: pip install .[tests]
+script: py.test
+notifications:
+  email:
+    on_failure: always
+    on_success: change
