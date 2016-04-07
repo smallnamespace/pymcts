@@ -1,5 +1,5 @@
 from hypothesis import given, strategies as st
-from pymcts.tree import Node
+from pymcts.tree import Node, Tree
 
 tree_value_strategy = st.floats() | st.booleans() | st.text()
 
@@ -16,7 +16,14 @@ tree_strategy = st.recursive(node_strategy,
                              lambda children: st.builds(Node, tree_value_strategy, st.lists(children)))
 
 
+def tree_dfs(node: Node) -> Node:
+    for child in node.children:
+        yield from tree_dfs(child)
+    yield node
+
+
 @given(tree_strategy)
-def test_shallow_children(tree):
-    for child in tree.children:
-        assert child.parent is tree
+def test_parent(tree: Tree):
+    for node in tree_dfs(tree):
+        for child in node.children:
+            assert child.parent is node
