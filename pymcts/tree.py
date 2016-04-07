@@ -4,35 +4,42 @@ T = TypeVar('T')
 
 
 class Node(Generic[T]):
-    """An abstract multi-child tree"""
+    """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
 
-    def __init__(self, value: T) -> None:
+    def __init__(self, value: T, children: List['Node[T]']=[]) -> None:
+        self._parent = None  # type: Node[T]
+        self._children = []  # type: List[Node[T]]
+
         self.value = value
-
-        self._children = [] # type: List[Node[T]]
-        self._parent = None # type: Node[T]
+        self.children = children
 
     @property
-    def children(self) -> List["Node[T]"]:
+    def children(self) -> List['Node[T]']:
         return self._children
 
     @children.setter
-    def children(self, children: List["Node[T]"]=[]) -> None:
+    def children(self, children: List['Node[T]']=[]) -> None:
         for child in children:
             child._parent = self
         self._children = children
 
     @property
-    def parent(self) -> "Node[T]":
+    def parent(self) -> 'Node[T]':
         return self._parent
 
-    def add_children(self, children: List["Node[T]"]=[]):
+    def add_children(self, children: List['Node[T]']=[]):
         self.children = self.children + children
         return self
 
-    def add_child(self, child: "Node[T]"):
+    def add_child(self, child: 'Node[T]'):
         self.add_children([child])
         return self
+
+    def __repr__(self):
+        return '{clz}(v={value!r}, [{children}])'.format(
+            clz=self.__class__.__name__,
+            value=self.value,
+            children=', '.join(repr(c) for c in self._children) if self._children else '')
 
 
 # Empty trees are just None
