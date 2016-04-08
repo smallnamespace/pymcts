@@ -41,6 +41,11 @@ class Node(Generic[T]):
             value=self.value,
             children=', '.join(repr(c) for c in self._children) if self._children else '')
 
+    def traverse_postorder(self) -> "Node[T]":
+        for child in self.children:
+            yield from child.traverse_postorder()
+        yield self
+
 
 # Empty trees are just None
 # Note that mypy doesn't yet support this, but it's in PEP 484
