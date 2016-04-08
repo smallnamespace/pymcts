@@ -42,6 +42,10 @@ class Node(Generic[T]):
             children=', '.join(repr(c) for c in self._children) if self._children else '')
 
     def traverse_postorder(self) -> "Node[T]":
+        """
+        Traverse tree rooted at this node via post-order DFS. Results are undefined if
+        the tree is modified concurrently.
+        """
         for child in self.children:
             yield from child.traverse_postorder()
         yield self
