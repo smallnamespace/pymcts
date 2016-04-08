@@ -1,4 +1,4 @@
-from typing import Any, Generator, Generic, List, Optional, TypeVar
+from typing import Any, Generator, Generic, Iterable, Set, Optional, TypeVar
 
 T = TypeVar('T')
 
@@ -6,32 +6,34 @@ T = TypeVar('T')
 class Node(Generic[T]):
     """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
 
-    def __init__(self, value: T, children: List['Node[T]']=None) -> None:
+    def __init__(self, value: T, children: Iterable['Node[T]']=None) -> None:
         self._parent = None  # type: Node[T]
-        self._children = []  # type: List[Node[T]]
+        self._children = set()  # type: Set[Node[T]]
 
         self.value = value
         if children:
             self.children = children
 
     @property
-    def children(self) -> List['Node[T]']:
+    def children(self) -> Set['Node[T]']:
         return self._children
 
     @children.setter
-    def children(self, children: List['Node[T]']=None) -> None:
-        if children:
-            for child in children:
-                child._parent = self
-            self._children = children
+    def children(self, children: Iterable['Node[T]']=None) -> None:
+        self._children = set()
+        self.add_children(children)
 
     @property
     def parent(self) -> 'Node[T]':
         return self._parent
 
-    def add_children(self, children: List['Node[T]']=None):
+    def add_children(self, children: Iterable['Node[T]']=None):
         if children:
-            self.children = self.children + children
+            new_children = set(children)
+            for child in new_children:
+                child._parent = self
+
+            self._children = self._children | new_children
         return self
 
     def add_child(self, child: 'Node[T]'):
