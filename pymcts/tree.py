@@ -6,29 +6,32 @@ T = TypeVar('T')
 class Node(Generic[T]):
     """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
 
-    def __init__(self, value: T, children: List['Node[T]']=[]) -> None:
+    def __init__(self, value: T, children: List['Node[T]']=None) -> None:
         self._parent = None  # type: Node[T]
         self._children = []  # type: List[Node[T]]
 
         self.value = value
-        self.children = children
+        if children:
+            self.children = children
 
     @property
     def children(self) -> List['Node[T]']:
         return self._children
 
     @children.setter
-    def children(self, children: List['Node[T]']=[]) -> None:
-        for child in children:
-            child._parent = self
-        self._children = children
+    def children(self, children: List['Node[T]']=None) -> None:
+        if children:
+            for child in children:
+                child._parent = self
+            self._children = children
 
     @property
     def parent(self) -> 'Node[T]':
         return self._parent
 
-    def add_children(self, children: List['Node[T]']=[]):
-        self.children = self.children + children
+    def add_children(self, children: List['Node[T]']=None):
+        if children:
+            self.children = self.children + children
         return self
 
     def add_child(self, child: 'Node[T]'):
