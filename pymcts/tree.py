@@ -1,4 +1,4 @@
-from typing import Generic, List, Optional, TypeVar
+from typing import Any, Generator, Generic, List, Optional, TypeVar
 
 T = TypeVar('T')
 
@@ -44,7 +44,7 @@ class Node(Generic[T]):
             value=self.value,
             children=', '.join(repr(c) for c in self._children) if self._children else '')
 
-    def traverse_postorder(self) -> "Node[T]":
+    def traverse_postorder(self) -> Generator["Node[T]", Any, "Node[T]"]:
         """
         Traverse tree rooted at this node via post-order DFS. Results are undefined if
         the tree is modified concurrently.
