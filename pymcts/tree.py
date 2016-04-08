@@ -7,9 +7,7 @@ class Node(Generic[T]):
     """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
 
     def __init__(self, value: T, children: Iterable['Node[T]']=None) -> None:
-        self._parent = None  # type: Node[T]
         self._children = set()  # type: Set[Node[T]]
-
         self.value = value
         if children:
             self.children = children
@@ -23,17 +21,10 @@ class Node(Generic[T]):
         self._children = set()
         self.add_children(children)
 
-    @property
-    def parent(self) -> 'Node[T]':
-        return self._parent
-
     def add_children(self, children: Iterable['Node[T]']=None):
         if children:
             new_children = set(children)
-            for child in new_children:
-                child._parent = self
-
-            self._children = self._children | new_children
+            self._children.update(new_children)
         return self
 
     def add_child(self, child: 'Node[T]'):
