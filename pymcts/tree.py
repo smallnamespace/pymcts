@@ -1,4 +1,4 @@
-from typing import Any, Generator, Generic, Iterable, Set, Optional, TypeVar
+from typing import Any, Generator, Generic, Iterable, List, Optional, TypeVar
 
 T = TypeVar('T')
 
@@ -7,24 +7,24 @@ class Node(Generic[T]):
     """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
 
     def __init__(self, value: T, children: Iterable['Node[T]']=None) -> None:
-        self._children = set()  # type: Set[Node[T]]
+        self._children = []  # type: List[Node[T]]
         self.value = value
         if children:
             self.children = children
 
     @property
-    def children(self) -> Set['Node[T]']:
+    def children(self) -> List['Node[T]']:
         return self._children
 
     @children.setter
     def children(self, children: Iterable['Node[T]']=None) -> None:
-        self._children = set()
-        self.add_children(children)
+        if children:
+            self._children = []
+            self.add_children(children)
 
     def add_children(self, children: Iterable['Node[T]']=None):
         if children:
-            new_children = set(children)
-            self._children.update(new_children)
+            self._children += list(children)
         return self
 
     def add_child(self, child: 'Node[T]'):
@@ -36,6 +36,13 @@ class Node(Generic[T]):
             clz=self.__class__.__name__,
             value=self.value,
             children=', '.join(repr(c) for c in self._children) if self._children else '')
+
+    def __eq__(self, other):
+        # TODO: Is it reasonable to ignore the generic type variable?
+        # E.g. should Node(2.0) == Node(2) ? Currently this is True
+        return (isinstance(other, type(self))
+                and self.value == other.value
+                and self.children == other.children)
 
     def traverse_postorder(self) -> Generator["Node[T]", Any, "Node[T]"]:
         """
