@@ -31,11 +31,15 @@ class Node(Generic[T]):
         self.add_children([child])
         return self
 
-    def __repr__(self):
-        return '{clz}(v={value!r}, [{children}])'.format(
+    def __repr__(self, level=0):
+        indent = ' ' * 4 * level
+        return '{indent}{clz}({value!r}{children})'.format(
+            indent=indent,
             clz=self.__class__.__name__,
             value=self.value,
-            children=', '.join(repr(c) for c in self._children) if self._children else '')
+            children=(', [\n' +
+                      ',\n'.join(c.__repr__(level+1) for c in self._children) + '\n' +
+                      indent + ']') if self._children else '')
 
     def __eq__(self, other):
         # TODO: Is it reasonable to ignore the generic type variable?

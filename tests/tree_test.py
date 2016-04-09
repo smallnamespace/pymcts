@@ -30,3 +30,26 @@ def apply_tree_strategy():
 
 def test_benchmark_tree_creation(benchmark):
     benchmark(apply_tree_strategy)
+
+
+def test_repr():
+    tree = Node(5, [
+        Node(4, [
+            Node('Foo')
+        ]),
+        Node(3, [
+            Node('Bar'),
+            Node('Baz')
+        ])
+    ])
+    expected_repr = '''Node(5, [
+    Node(4, [
+        Node('Foo')
+    ]),
+    Node(3, [
+        Node('Bar'),
+        Node('Baz')
+    ])
+])'''
+
+    assert repr(tree) == expected_repr
