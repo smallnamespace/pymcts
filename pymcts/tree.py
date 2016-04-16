@@ -2,7 +2,8 @@ from typing import Any, Generator, Generic, Iterable, List, Optional, TypeVar
 
 T = TypeVar('T')
 
-
+# TODO: constrain child types to be polymorphic; e.g. NodeSubclass only takes NodeSubclass as children, rather
+# than any instance of Node
 class Node(Generic[T]):
     """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
 
@@ -19,17 +20,7 @@ class Node(Generic[T]):
     @children.setter
     def children(self, children: Iterable['Node[T]']=None) -> None:
         if children:
-            self._children = []
-            self.add_children(children)
-
-    def add_children(self, children: Iterable['Node[T]']=None):
-        if children:
-            self._children += list(children)
-        return self
-
-    def add_child(self, child: 'Node[T]'):
-        self.add_children([child])
-        return self
+            self._children = list(children)
 
     def __repr__(self, level=0):
         indent = ' ' * 4 * level

@@ -1,6 +1,6 @@
 from hypothesis import assume, find, given, strategies as st
 
-from pymcts.tree import Node, Tree
+from pymcts.tree import Node
 
 tree_value_strategy = (st.floats() | st.booleans() | st.text()).map(
     lambda v: assume(v == v) and v)
