@@ -34,7 +34,7 @@ class Node(Generic[T]):
             clz=self.__class__.__name__,
             value=self.value,
             children=(', [\n' +
-                      ',\n'.join(c.__repr__(level+1) for c in self._children) + '\n' +
+                      ',\n'.join(c.__repr__(level + 1) for c in self._children) + '\n' +
                       indent + ']') if self._children else '')
 
     def __eq__(self, other):
