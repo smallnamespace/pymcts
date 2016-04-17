@@ -19,11 +19,12 @@ def test_two_stage():
     root_state = TrivialState(result=None, moves={1: win_state, 2: loss_state})
 
     root = UCTNode(root_state)
-    root.mc_round()
-    root.mc_round()
-    assert root.wins == 1
-    assert root.visits == 2
+    for _ in range(3):
+        root.mc_round()
+
+    assert root.wins == 2
+    assert root.visits == 3
 
     win_node = [child for child in root.children if child.move == root.best_move()][0]
-    assert win_node.wins == 1
-    assert win_node.visits == 1
+    assert win_node.wins == 2
+    assert win_node.visits == 2
