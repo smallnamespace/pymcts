@@ -2,7 +2,7 @@ from pymcts.mc_tree import MCTNode
 from pymcts.game.trivial import TrivialState
 
 
-def test_mc_tree_trivial():
+def test_trivial():
     node = MCTNode(TrivialState())
     node.mc_round()
     assert node.wins == 1

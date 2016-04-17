@@ -2,10 +2,15 @@ from typing import Any, Generator, Generic, Iterable, List, Optional, TypeVar
 
 T = TypeVar('T')
 
-# TODO: constrain child types to be polymorphic; e.g. NodeSubclass only takes NodeSubclass as children, rather
-# than any instance of Node
+
 class Node(Generic[T]):
-    """A generic tree node. Nodes point to their parents, and nodes may have multiple children."""
+    """
+    A generic tree node. Nodes point to their parents, and nodes may have multiple children.
+
+    TODO: constrain child types to be polymorphic; e.g. NodeSubclass only takes NodeSubclass as
+    children, rather than any instance of Node. This awaits support at
+    https://github.com/python/mypy/issues/689.
+    """
 
     def __init__(self, value: T, children: Iterable['Node[T]']=None) -> None:
         self._children = []  # type: List[Node[T]]
@@ -33,13 +38,15 @@ class Node(Generic[T]):
                       indent + ']') if self._children else '')
 
     def __eq__(self, other):
-        # TODO: Is it reasonable to ignore the generic type variable?
-        # E.g. should Node(2.0) == Node(2) ? Currently this is True
+        """
+        TODO: Is it reasonable to ignore the generic type variable?
+        E.g. should Node(2.0) == Node(2) ? Currently this is True
+        """
         return (isinstance(other, type(self))
                 and self.value == other.value
                 and self.children == other.children)
 
-    def traverse_postorder(self) -> Generator["Node[T]", Any, "Node[T]"]:
+    def traverse_postorder(self) -> Generator['Node[T]', Any, 'Node[T]']:
         """
         Traverse tree rooted at this node via post-order DFS. Results are undefined if
         the tree is modified concurrently.

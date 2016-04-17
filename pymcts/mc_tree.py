@@ -1,3 +1,4 @@
+import operator
 import random
 
 from .tree import Node
@@ -32,10 +33,11 @@ class State(metaclass=ABCMeta):
 
 
 class MCTNode(Node[State]):
-    def __init__(self, state: State, children: List['MCTNode']=None):
+    def __init__(self, state: State, children: List['MCTNode']=None, move: Hashable=None):
+        self.move = move
         self._untried_moves = set(state.moves)
-        self._wins = 0
-        self._visits = 0
+        self._wins = 0.0
+        self._visits = 0.0
         super().__init__(state, children)
 
     @property
@@ -54,10 +56,10 @@ class MCTNode(Node[State]):
     def terminal(self) -> bool:
         return not (self._untried_moves or self.children)
 
-    def expand(self):
-        move = random.choice(self._untried_moves)
+    def expand(self) -> 'MCTNode':
+        move = random.choice(tuple(self._untried_moves))
         self._untried_moves.remove(move)
-        child = MCTNode(self.state.do_move(move))
+        child = self.__class__(state=self.state.do_move(move), move=move)
         self.children.append(child)
 
         return child
@@ -81,10 +83,18 @@ class MCTNode(Node[State]):
         for node in path:
             node.update(result)
 
+    def best_move(self) -> Optional[Hashable]:
+        if not self.children:
+            return None
+
+        return max(((child.move, child.visits) for child in self.children),
+                   key=operator.itemgetter(1))[0]
+
     def rollout(self) -> Optional[Dict[PlayerIdx, float]]:
+        # TODO: Use optional rollout implementation on the state
         state = copy(self.state)
         while state.moves:
-            state.do_move(random.choice(state.moves))
+            state.do_move(random.choice(tuple(state.moves)))
         return state.result
 
     def select_child(self) -> 'MCTNode':
