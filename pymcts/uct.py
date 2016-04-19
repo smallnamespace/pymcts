@@ -1,10 +1,10 @@
 import math
 import operator
 
-from .mc_tree import MCTNode
+from .mc_tree import MCTNode, State
 
 
-class UCTNode(MCTNode):
+class UCTNode(MCTNode['UCTNode', State]):  # type: ignore
     def ucb1(self, child: 'UCTNode') -> float:
         return child.wins / child.visits + math.sqrt(2 * math.log(self.visits) / child.visits)
 

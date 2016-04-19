@@ -2,7 +2,7 @@
 sudo: false
 language: python
 python:
-  - 3.5
+  - 3.5.1
 cache: pip
 install: pip install .[tests]
 script: py.test

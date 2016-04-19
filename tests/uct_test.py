@@ -1,4 +1,4 @@
-from pymcts.uct import UCTNode
+from pymcts.uct import UCTNode  # type: ignore
 from pymcts.game.trivial import TrivialState
 
 

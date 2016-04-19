@@ -1,29 +1,27 @@
-from typing import Any, Generator, Generic, Iterable, List, Optional, TypeVar
+from typing import cast, Any, Generator, Generic, Iterable, List, Optional, TypeVar
 
-T = TypeVar('T')
+# TODO: Add upper bound once it's supported at https://github.com/python/mypy/issues/689
+N = TypeVar('N')
+V = TypeVar('V', covariant=True)
 
 
-class Node(Generic[T]):
+class Node(Generic[N, V]):
     """
     A generic tree node. Nodes point to their parents, and nodes may have multiple children.
-
-    TODO: constrain child types to be polymorphic; e.g. NodeSubclass only takes NodeSubclass as
-    children, rather than any instance of Node. This awaits support at
-    https://github.com/python/mypy/issues/689.
     """
 
-    def __init__(self, value: T, children: Iterable['Node[T]']=None) -> None:
-        self._children = []  # type: List[Node[T]]
+    def __init__(self, value: V, children: Iterable['N']=None) -> None:  # type: ignore
+        self._children = []  # type: List[N]
         self.value = value
         if children:
             self.children = children
 
     @property
-    def children(self) -> List['Node[T]']:
+    def children(self) -> List['N']:
         return self._children
 
     @children.setter
-    def children(self, children: Iterable['Node[T]']=None) -> None:
+    def children(self, children: Iterable['N']=None) -> None:
         if children:
             self._children = list(children)
 
@@ -42,20 +40,20 @@ class Node(Generic[T]):
         TODO: Is it reasonable to ignore the generic type variable?
         E.g. should Node(2.0) == Node(2) ? Currently this is True
         """
-        return (isinstance(other, type(self))
-                and self.value == other.value
-                and self.children == other.children)
+        return (isinstance(other, type(self)) and
+                self.value == other.value and
+                self.children == other.children)
 
-    def traverse_postorder(self) -> Generator['Node[T]', Any, 'Node[T]']:
+    def traverse_postorder(self) -> Generator['N', Any, 'N']:
         """
         Traverse tree rooted at this node via post-order DFS. Results are undefined if
         the tree is modified concurrently.
         """
         for child in self.children:
-            yield from child.traverse_postorder()
-        yield self
+            yield from cast('Node', child).traverse_postorder()
+        yield cast('N', self)
 
 
 # Empty trees are just None
 # Note that mypy doesn't yet support this, but it's in PEP 484
-Tree = Optional[Node[T]]
+Tree = Optional[Node[N, V]]  # type: ignore

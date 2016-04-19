@@ -3,14 +3,18 @@ from typing import Optional, Dict, Iterable, Hashable
 
 
 class TrivialState(State):
-    """A trivial game where Player 1 always immediately wins."""
+    """
+    A trivial game where Player 1 always immediately wins.
+
+    The result of the game is arbitrarily overridable for testing purposes.
+    """
     def __init__(self,
                  result: Optional[Dict[PlayerIdx, float]]={1: 1.0},
                  previous_player: PlayerIdx=1,
-                 moves: Dict[Hashable, State]=None):
+                 moves: Dict[Hashable, State]=None) -> None:
         self._result = result
         self._previous_player = previous_player
-        self._moves = {}
+        self._moves = {}  # type: Dict[Hashable, State]
         if moves:
             self._moves = moves
 
