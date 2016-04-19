@@ -4,8 +4,10 @@ language: python
 python:
   - 3.5.1
 cache: pip
-install: pip install .[tests]
-script: py.test
+install: pip install .[tests] mypy-lang
+script:
+  - mypy -s pymcts tests
+  - py.test
 notifications:
   email:
     on_failure: always
