@@ -32,3 +32,6 @@ class TrivialState(State):
     @property
     def previous_player(self) -> PlayerIdx:
         return self._previous_player
+
+    def __repr__(self):
+        return repr(self.result or list(self._moves.keys()))
