@@ -26,8 +26,11 @@ class TrivialState(State):
     def moves(self) -> Iterable[Hashable]:
         return self._moves.keys()
 
-    def do_move(self, move) -> 'State':
-        return self._moves[move]
+    def do_move(self, move) -> None:
+        new_state = self._moves[move]
+        self._result = new_state.result
+        self._previous_player = new_state._previous_player
+        self._moves = new_state._moves
 
     @property
     def previous_player(self) -> PlayerIdx:

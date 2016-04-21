@@ -9,7 +9,6 @@ class Node(Generic[N, V]):
     """
     A generic tree node. Nodes point to their parents, and nodes may have multiple children.
     """
-
     def __init__(self, value: V, children: Iterable['N']=None) -> None:  # type: ignore
         self._children = []  # type: List[N]
         self.value = value
@@ -25,15 +24,22 @@ class Node(Generic[N, V]):
         if children:
             self._children = list(children)
 
-    def __repr__(self, level=0):
+    def __repr__(self):
+        return self.repr()
+
+    def repr(self, level=0) -> str:
         indent = ' ' * 4 * level
-        return '{indent}{clz}({value!r}{children})'.format(
+        return '{indent}{clz}({node_repr}{children})'.format(
             indent=indent,
             clz=self.__class__.__name__,
-            value=self.value,
+            node_repr=self.node_repr(),
             children=(', [\n' +
-                      ',\n'.join(c.__repr__(level + 1) for c in self._children) + '\n' +
+                      ',\n'.join(c.repr(level + 1) for c in self._children) + '\n' +
                       indent + ']') if self._children else '')
+
+    def node_repr(self) -> str:
+        """String representation of the node's members, not including children."""
+        return repr(self.value)
 
     def __eq__(self, other):
         """

@@ -3,7 +3,7 @@ import random
 
 from .tree import Node
 from abc import ABCMeta, abstractmethod, abstractproperty
-from copy import copy
+from copy import deepcopy
 from typing import cast, Dict, Generic, Iterable, Hashable, List, Optional, TypeVar
 
 PlayerIdx = int
@@ -28,7 +28,7 @@ class State(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def do_move(self, move) -> 'State':
+    def do_move(self, move) -> None:
         pass
 
 N = TypeVar('N')
@@ -61,7 +61,9 @@ class MCTNode(Node[N, State], Generic[N]):
     def expand(self) -> N:
         move = random.choice(tuple(self._untried_moves))
         self._untried_moves.remove(move)
-        child = self.__class__(state=self.state.do_move(move), move=move)  # type: ignore
+        new_state = deepcopy(self.state)
+        new_state.do_move(move)
+        child = self.__class__(state=new_state, move=move)  # type: ignore
         self.children.append(child)
 
         return cast('N', child)
@@ -94,7 +96,7 @@ class MCTNode(Node[N, State], Generic[N]):
 
     def rollout(self) -> Optional[Dict[PlayerIdx, float]]:
         # TODO: Use optional rollout implementation on the state
-        state = copy(self.state)
+        state = deepcopy(self.state)
         while state.moves:
             state.do_move(random.choice(tuple(state.moves)))
         return state.result
@@ -105,6 +107,15 @@ class MCTNode(Node[N, State], Generic[N]):
     def update(self, result: Dict[PlayerIdx, float]) -> N:
         self._visits += 1
         self._wins += result[self.state.previous_player]
+
+    def node_repr(self) -> str:
+        """String representation of the node's members, not including children."""
+        return 'M: {}, P{}, Wins/Visits: {}/{}, # Untried: {}'.format(
+            self.move,
+            self.state.previous_player,
+            self._wins,
+            self._visits,
+            len(self._untried_moves))
 
 
 MCTree = Optional[MCTNode[MCTNode, State]]  # type: ignore
