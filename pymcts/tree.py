@@ -27,6 +27,7 @@ class Node(Generic[N, V]):
     def __repr__(self):
         return self.repr()
 
+    # TODO: Use textwrap module
     def repr(self, level=0) -> str:
         indent = ' ' * 4 * level
         return '{indent}{clz}({node_repr}{children})'.format(

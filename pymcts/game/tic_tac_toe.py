@@ -32,20 +32,29 @@ class TicTacToeState(State):
 
     @property
     def result(self) -> Optional[Dict[PlayerIdx, float]]:
-        p1_result = 0.5
+        # Check for win and return
         for (x1, y1), (x2, y2), (x3, y3) in self.WINNING_POSITIONS:
-            if self._board[x1][y1] == self._board[x2][y2] == self._board[x3][y3]:
+            if (self._board[x1][y1] in (CellState.X, CellState.O) and
+                            self._board[x1][y1] == self._board[x2][y2] == self._board[x3][y3]):
                 p1_result = 1.0 if self._board[x1][y1].value == 1 else 0.0
-                break
+                return {1: p1_result, 2: 1.0 - p1_result}
 
-        return {1: p1_result, 2: 1.0 - p1_result}
+        # Otherwise, if the board has any empty spaces, we're not yet at a terminal state
+        if any(cell == CellState.EMPTY for row in self._board for cell in row):
+            return None
+        else:
+            return {1: 0.5, 2: 0.5}
 
     @property
     def moves(self) -> Iterable[Hashable]:
-        return [(x, y)
-                for x in range(3)
-                for y in range(3)
-                if self._board[x][y] == CellState.EMPTY]
+        print(self.result)
+        if not self.result:
+            return [(x, y)
+                    for x in range(3)
+                    for y in range(3)
+                    if self._board[x][y] == CellState.EMPTY]
+        else:
+            return []
 
     def do_move(self, move: Tuple[int, int]) -> 'State':
         x, y = move
