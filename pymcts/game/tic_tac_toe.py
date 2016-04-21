@@ -47,7 +47,6 @@ class TicTacToeState(State):
 
     @property
     def moves(self) -> Iterable[Hashable]:
-        print(self.result)
         if not self.result:
             return [(x, y)
                     for x in range(3)
