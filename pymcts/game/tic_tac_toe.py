@@ -56,7 +56,7 @@ class TicTacToeState(State):
         else:
             return []
 
-    def do_move(self, move: Tuple[int, int]) -> 'State':
+    def do_move(self, move: Tuple[int, int]) -> None:
         x, y = move
         if self._board[x][y] == CellState.EMPTY:
             self._board[x][y] = CellState(self.current_player)
