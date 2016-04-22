@@ -28,3 +28,13 @@ def test_two_stage():
     win_node = [child for child in root.children if child.move == root.best_move()][0]
     assert win_node.wins == 2
     assert win_node.visits == 2
+
+
+def trivial_uct():
+    node = UCTNode(TrivialState())
+    for _ in range(int(1E3)):
+        node.mc_round()
+
+
+def test_benchmark_trivial(benchmark):
+    benchmark(trivial_uct)
