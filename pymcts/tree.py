@@ -35,7 +35,7 @@ class Node(Generic[N, V]):
             clz=self.__class__.__name__,
             node_repr=self.node_repr(),
             children=(', [\n' +
-                      ',\n'.join(c.repr(level + 1) for c in self._children) + '\n' +
+                      ',\n'.join(cast(Node, c).repr(level + 1) for c in self._children) + '\n' +
                       indent + ']') if self._children else '')
 
     def node_repr(self) -> str:

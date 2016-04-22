@@ -11,10 +11,10 @@ class TrivialState(State):
     def __init__(self,
                  result: Optional[Dict[PlayerIdx, float]]={1: 1.0},
                  previous_player: PlayerIdx=1,
-                 moves: Dict[Hashable, State]=None) -> None:
+                 moves: Dict[Hashable, 'TrivialState']=None) -> None:
         self._result = result
         self._previous_player = previous_player
-        self._moves = {}  # type: Dict[Hashable, State]
+        self._moves = {}  # type: Dict[Hashable, 'TrivialState']
         if moves:
             self._moves = moves
 

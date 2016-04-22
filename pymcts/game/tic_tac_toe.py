@@ -49,7 +49,7 @@ class TicTacToeState(State):
     def moves(self) -> Iterable[Hashable]:
         if not self.result:
             return [(x, y)
-                    for x in range(3)
+                    for x in range(3)  # type: ignore
                     for y in range(3)
                     if self._board[x][y] == CellState.EMPTY]
         else:
