@@ -28,6 +28,7 @@ class TicTacToeState(State):
 
     def __init__(self) -> None:
         self._previous_player = 2
+        # This could obviously be made much faster with bit vector twiddling
         self._board = [[CellState.EMPTY] * 3, [CellState.EMPTY] * 3, [CellState.EMPTY] * 3]
 
     @property
