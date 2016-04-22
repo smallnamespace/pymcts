@@ -1,5 +1,4 @@
 from ..mc_tree import State, PlayerIdx
-from copy import copy
 from enum import Enum
 from typing import Optional, Dict, Iterable, Hashable, Tuple
 
@@ -36,7 +35,7 @@ class TicTacToeState(State):
         # Check for win and return
         for (x1, y1), (x2, y2), (x3, y3) in self.WINNING_POSITIONS:
             if (self._board[x1][y1] in (CellState.X, CellState.O) and
-                            self._board[x1][y1] == self._board[x2][y2] == self._board[x3][y3]):
+                    self._board[x1][y1] == self._board[x2][y2] == self._board[x3][y3]):
                 p1_result = 1.0 if self._board[x1][y1].value == 1 else 0.0
                 return {1: p1_result, 2: 1.0 - p1_result}
 
