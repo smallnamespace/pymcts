@@ -1,8 +1,14 @@
+from enum import Enum
 from typing import cast, Any, Generator, Generic, Iterable, List, Optional, TypeVar
 
 # TODO: Add upper bound once it's supported at https://github.com/python/mypy/issues/689
 N = TypeVar('N')
 V = TypeVar('V', covariant=True)
+
+
+class Traversal(Enum):
+    preorder = 1
+    postorder = 2
 
 
 class Node(Generic[N, V]):
@@ -51,14 +57,19 @@ class Node(Generic[N, V]):
                 self.value == other.value and
                 self.children == other.children)
 
-    def traverse_postorder(self) -> Generator['N', Any, 'N']:
+    def traverse(self, order=Traversal.preorder) -> Generator['N', Any, 'N']:
         """
         Traverse tree rooted at this node via post-order DFS. Results are undefined if
         the tree is modified concurrently.
         """
+        if order == Traversal.preorder:
+            yield cast('N', self)
+
         for child in self.children:
-            yield from cast('Node', child).traverse_postorder()
-        yield cast('N', self)
+            yield from cast('Node', child).traverse(order)
+
+        if order == Traversal.postorder:
+            yield cast('N', self)
 
 
 # Empty trees are just None

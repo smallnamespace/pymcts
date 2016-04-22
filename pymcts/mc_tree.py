@@ -9,6 +9,7 @@ from typing import cast, Dict, Generic, Iterable, Hashable, List, Optional, Type
 PlayerIdx = int
 Result = Dict[PlayerIdx, float]
 
+
 class State(metaclass=ABCMeta):
     @abstractproperty
     def result(self) -> Optional[Result]:
