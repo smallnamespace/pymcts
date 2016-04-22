@@ -72,7 +72,7 @@ class TicTacToeState(State):
         return 3 - self._previous_player
 
     def __repr__(self):
-        s = ""
+        s = ''
         for row in self._board:
             for cell in row:
                 s += str(cell)
