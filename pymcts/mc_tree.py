@@ -7,11 +7,11 @@ from copy import deepcopy
 from typing import cast, Dict, Generic, Iterable, Hashable, List, Optional, TypeVar
 
 PlayerIdx = int
-
+Result = Dict[PlayerIdx, float]
 
 class State(metaclass=ABCMeta):
     @abstractproperty
-    def result(self) -> Optional[Dict[PlayerIdx, float]]:
+    def result(self) -> Optional[Result]:
         """
         Payoff for each player, indexed by the player id.
 
@@ -30,6 +30,13 @@ class State(metaclass=ABCMeta):
     @abstractmethod
     def do_move(self, move) -> None:
         pass
+
+    def rollout(self) -> Result:
+        """Override this for a faster roll-out that doesn't depend on state copying"""
+        state = deepcopy(self)
+        while state.moves:
+            state.do_move(random.choice(tuple(state.moves)))
+        return state.result
 
 N = TypeVar('N')
 
@@ -83,7 +90,7 @@ class MCTNode(Node[N, State], Generic[N]):
         if leaf._untried_moves:
             leaf = leaf.expand()
             path.append(leaf)
-        result = leaf.rollout()
+        result = leaf.state.rollout()
         for node in path:
             node.update(result)
 
@@ -93,13 +100,6 @@ class MCTNode(Node[N, State], Generic[N]):
 
         return max(((child.move, child.visits) for child in cast(List['MCTNode'], self.children)),
                    key=operator.itemgetter(1))[0]
-
-    def rollout(self) -> Optional[Dict[PlayerIdx, float]]:
-        # TODO: Use optional rollout implementation on the state
-        state = deepcopy(self.state)
-        while state.moves:
-            state.do_move(random.choice(tuple(state.moves)))
-        return state.result
 
     def select_child(self) -> N:
         return random.choice(self._children)
