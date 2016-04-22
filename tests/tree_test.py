@@ -1,6 +1,7 @@
 from hypothesis import assume, find, given, strategies as st
 
 from pymcts.tree import Node
+from textwrap import dedent
 
 tree_value_strategy = (st.floats() | st.booleans() | st.text()).map(
     lambda v: assume(v == v) and v)
@@ -42,14 +43,15 @@ def test_repr():
             Node('Baz')
         ])
     ])
-    expected_repr = '''Node(5, [
-    Node(4, [
-        Node('Foo')
-    ]),
-    Node(3, [
-        Node('Bar'),
-        Node('Baz')
-    ])
-])'''
+    expected_repr = dedent('''
+        Node(5, [
+            Node(4, [
+                Node('Foo')
+            ]),
+            Node(3, [
+                Node('Bar'),
+                Node('Baz')
+            ])
+        ])''')[1:]
 
     assert repr(tree) == expected_repr
