@@ -1,6 +1,6 @@
 from hypothesis import assume, find, given, strategies as st
 
-from pymcts.tree import Node
+from pymcts.tree import Node, Traversal
 from textwrap import dedent
 
 tree_value_strategy = (st.floats() | st.booleans() | st.text()).map(
@@ -31,6 +31,15 @@ def apply_tree_strategy():
 
 def test_benchmark_tree_creation(benchmark):
     benchmark(apply_tree_strategy)
+
+
+@given(tree_strategy)
+def test_traverse(tree):
+    # Both traversals result in the same set of nodes
+    assert (set(map(id, tree.traverse(Traversal.preorder))) ==
+            set(map(id, tree.traverse(Traversal.postorder))))
+
+    assert next(tree.traverse(Traversal.preorder)) == tree
 
 
 def test_repr():
