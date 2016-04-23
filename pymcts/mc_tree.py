@@ -47,7 +47,7 @@ class MCTNode(Node[N, State], Generic[N]):
         self.move = move
         self._untried_moves = set(state.moves)  # type: Set[Hashable]
         self._wins = 0.0
-        self._visits = 0.0
+        self._visits = 0
         super().__init__(state, children)
 
     @property
