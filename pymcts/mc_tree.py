@@ -109,14 +109,21 @@ class MCTNode(Node[N, State], Generic[N]):
         self._visits += 1
         self._wins += result[self.state.previous_player]
 
-    def node_repr(self) -> str:
+    def node_repr(self, indent: str) -> str:
         """String representation of the node's members, not including children."""
-        return 'M: {}, P{}, Wins/Visits: {}/{}, # Untried: {}'.format(
+        state_lines = repr(self.state).splitlines()
+        if len(state_lines) > 1:
+            # If the state is multi-line, split it off into its own lines
+            state_lines = [''] + [indent + ' ' * 4 + l for l in state_lines]
+        state_str = '\n'.join(state_lines)
+
+        return 'M: {}, P{}, Wins/Visits: {}/{}, |U|: {}, S: {}'.format(
             self.move,
             self.state.previous_player,
             self._wins,
             self._visits,
-            len(self._untried_moves))
+            len(self._untried_moves),
+            state_str)
 
 
 MCTree = Optional[MCTNode[MCTNode, State]]  # type: ignore

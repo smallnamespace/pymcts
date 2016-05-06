@@ -33,18 +33,17 @@ class Node(Generic[N, V]):
     def __repr__(self):
         return self.repr()
 
-    # TODO: Use textwrap module
     def repr(self, level=0) -> str:
         indent = ' ' * 4 * level
         return '{indent}{clz}({node_repr}{children})'.format(
             indent=indent,
             clz=self.__class__.__name__,
-            node_repr=self.node_repr(),
+            node_repr=self.node_repr(indent),
             children=(', [\n' +
                       ',\n'.join(cast(Node, c).repr(level + 1) for c in self._children) + '\n' +
                       indent + ']') if self._children else '')
 
-    def node_repr(self) -> str:
+    def node_repr(self, indent: str) -> str:
         """String representation of the node's members, not including children."""
         return repr(self.value)
 
