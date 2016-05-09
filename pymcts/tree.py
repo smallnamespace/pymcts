@@ -56,16 +56,23 @@ class Node(Generic[N, V]):
                 self.value == other.value and
                 self.children == other.children)
 
+    _NodeOrTuple = Union['N', Tuple['N', 'N']]
+
     def traverse(self,
                  order=Traversal.preorder,
                  return_tuples=False,
-                 parent: 'N'=None) -> Generator[Union['N', Tuple['N', 'N']], Any, Union['N', Tuple['N', 'N']]]:
+                 max_depth=None,
+                 parent: 'N'=None) -> Generator[_NodeOrTuple, Any, _NodeOrTuple]:
         """
-        Traverse tree rooted at this node via post-order DFS. Results are undefined if
-        the tree is modified concurrently.
+        Traverse tree rooted at this node. Results are undefined if the tree is modified
+        concurrently.
 
         :param return_tuples: if True, returns a tuple of (parent, node) rather than just node
+        :param max_depth: cut off traversal below this depth; a singleton node has depth of 1
         """
+        if (max_depth is not None) and max_depth < 1:
+            return  # type: ignore
+
         self_ret = cast(Union['N', Tuple['N', 'N']],
                         (parent, self) if return_tuples else self)
 
@@ -73,7 +80,10 @@ class Node(Generic[N, V]):
             yield self_ret
 
         for child in self.children:
-            yield from cast('Node', child).traverse(order, return_tuples, self)
+            yield from cast('Node', child).traverse(order,
+                                                    return_tuples,
+                                                    max_depth - 1 if max_depth else None,
+                                                    self)
 
         if order == Traversal.postorder:
             yield self_ret

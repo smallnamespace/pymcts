@@ -41,9 +41,39 @@ def test_traverse(tree):
 
     assert next(tree.traverse(Traversal.preorder)) == tree
 
-    # Check that parent pointers are correct
+
+@given(tree_strategy)
+def test_traverse_parents(tree):
+    # Check that parent pointers are correct. In combination with the previous test,
+    # guarantees that (parent, child) is returned iff the edge exists
     assert all(not parent or child in parent.children
                for parent, child in tree.traverse(Traversal.preorder, return_tuples=True))
+
+
+@given(tree_strategy, st.integers(min_value=0))
+def test_traverse_max_depth(tree, max_depth):
+    # TODO: This may be too complicated for a test case, as this can silently pass if we
+    # get the max depth calculation wrong
+    node_depths = {}  # Node ID to current max depth
+    parents = {}  # Node ID to parent node
+    for parent, child in tree.traverse(Traversal.preorder, return_tuples=True, max_depth=max_depth):
+        node_depths[id(child)] = node_depths.get(id(child), 1)
+        if parent:
+            parents[id(child)] = parent
+
+        # Back-propagate upwards, sitting max depths along the way
+        node = child
+        while parents.get(id(node), None):
+            node_par = parents[id(node)]
+
+            node_depth = node_depths[id(node_par)]
+            parent_depth = node_depths[id(node_par)]
+            node_depths[id(node_par)] = max(parent_depth, 1 + node_depth)
+
+            node = node_par
+
+    assert (max_depth < 1 or
+            node_depths[id(tree)] <= max_depth)
 
 
 def test_repr():
