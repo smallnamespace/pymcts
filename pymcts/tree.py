@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import cast, Any, Generator, Generic, Iterable, List, Optional, TypeVar
+from typing import cast, Any, Generator, Generic, Iterable, List, Optional, TypeVar, Union, Tuple
 
 # TODO: Add upper bound once it's supported at https://github.com/python/mypy/issues/689
 N = TypeVar('N')
@@ -56,19 +56,27 @@ class Node(Generic[N, V]):
                 self.value == other.value and
                 self.children == other.children)
 
-    def traverse(self, order=Traversal.preorder) -> Generator['N', Any, 'N']:
+    def traverse(self,
+                 order=Traversal.preorder,
+                 return_tuples=False,
+                 parent: 'N'=None) -> Generator[Union['N', Tuple['N', 'N']], Any, Union['N', Tuple['N', 'N']]]:
         """
         Traverse tree rooted at this node via post-order DFS. Results are undefined if
         the tree is modified concurrently.
+
+        :param return_tuples: if True, returns a tuple of (parent, node) rather than just node
         """
+        self_ret = cast(Union['N', Tuple['N', 'N']],
+                        (parent, self) if return_tuples else self)
+
         if order == Traversal.preorder:
-            yield cast('N', self)
+            yield self_ret
 
         for child in self.children:
-            yield from cast('Node', child).traverse(order)
+            yield from cast('Node', child).traverse(order, return_tuples, self)
 
         if order == Traversal.postorder:
-            yield cast('N', self)
+            yield self_ret
 
 
 # Empty trees are just None

@@ -41,6 +41,10 @@ def test_traverse(tree):
 
     assert next(tree.traverse(Traversal.preorder)) == tree
 
+    # Check that parent pointers are correct
+    assert all(not parent or child in parent.children
+               for parent, child in tree.traverse(Traversal.preorder, return_tuples=True))
+
 
 def test_repr():
     tree = Node(5, [
