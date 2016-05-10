@@ -60,3 +60,9 @@ target/
 
 # IDE stuff
 .idea/
+
+# iPython / Jupyter
+.ipython/
+.ipynb_checkpoints/
+
+
