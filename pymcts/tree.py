@@ -56,38 +56,47 @@ class Node(Generic[N, V]):
                 self.value == other.value and
                 self.children == other.children)
 
-    _NodeOrTuple = Union['N', Tuple['N', 'N']]
-
-    def traverse(self,
-                 order=Traversal.preorder,
-                 return_tuples=False,
-                 max_depth=None,
-                 parent: 'N'=None) -> Generator[_NodeOrTuple, Any, _NodeOrTuple]:
+    def traverse_edges(self,
+                       order=Traversal.preorder,
+                       max_depth=None,
+                       parent: 'N'=None) -> Generator[Tuple['N', 'N'], Any, Tuple['N', 'N']]:
         """
-        Traverse tree rooted at this node. Results are undefined if the tree is modified
+        Traverse edges of tree rooted at this node. Results are undefined if the tree is modified
         concurrently.
 
+        Note: Results will include an implicit edge from None to the root.
+
+        :param order: Pre-order results in natural DFS edge ordering; post-order results in child
+        edges being yielded first
         :param return_tuples: if True, returns a tuple of (parent, node) rather than just node
         :param max_depth: cut off traversal below this depth; a singleton node has depth of 1
         """
         if (max_depth is not None) and max_depth < 1:
             return  # type: ignore
 
-        self_ret = cast(Union['N', Tuple['N', 'N']],
-                        (parent, self) if return_tuples else self)
-
         if order == Traversal.preorder:
-            yield self_ret
+            yield parent, cast('N', self)
 
         for child in self.children:
-            yield from cast('Node', child).traverse(order,
-                                                    return_tuples,
-                                                    max_depth - 1 if max_depth else None,
-                                                    self)
+            yield from cast('Node', child).traverse_edges(order,
+                                                          max_depth - 1 if max_depth else None,
+                                                          self)
 
         if order == Traversal.postorder:
-            yield self_ret
+            yield parent, cast('N', self)
 
+    def traverse(self,
+                 order=Traversal.preorder,
+                 max_depth=None,
+                 parent: 'N' = None) -> Generator['N', Any, 'N']:
+        """
+        Traverse tree rooted at this node. Results are undefined if the tree is modified
+        concurrently.
+
+        :param max_depth: cut off traversal below this depth; a singleton node has depth of 1
+        """
+        for _, child in self.traverse_edges(order, max_depth, parent):
+            yield child
 
 # Empty trees are just None
 # Note that mypy doesn't yet support this, but it's in PEP 484
