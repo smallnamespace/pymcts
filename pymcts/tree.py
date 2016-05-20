@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import cast, Any, Generator, Generic, Iterable, List, Optional, TypeVar, Union, Tuple
+from typing import cast, Any, Generator, Generic, Iterable, List, Optional, TypeVar, Tuple
 
 # TODO: Add upper bound once it's supported at https://github.com/python/mypy/issues/689
 N = TypeVar('N')
