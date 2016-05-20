@@ -19,7 +19,7 @@ setup(
     version=0.1,
     packages=find_packages(exclude="tests"),
     tests_require=_tests_require,
-    extras_require={"tests": _tests_require},
+    extras_require={"tests": _tests_require, "drawing": ["python-igraph"]},
     author="smallnamespace",
     author_email="smallnamespace@gmail.com",
     description="Python implementation of Monte Carlo Tree Search (MCTS)",
